@@ -1,5 +1,6 @@
 console.log("hello world!");
 
+const { Socket } = require("engine.io");
 // load express
 let express = require("express");
 
@@ -13,3 +14,20 @@ let server = app.listen(port);
 console.log("running server on http://localhost:" + port);
 
 app.use(express.static("public"));
+
+let serverSocket = require("socket.io");
+
+let io = serverSocket(server);
+
+io.on("connection", newConnection);
+
+function newConnection(newSocket) {
+  console.log("new connection:", newSocket.id);
+
+  newSocket.on("mouse", incomingMouseMessage);
+
+  function incomingMouseMessage(dataReceived) {
+    console.log(dataReceived);
+    newSocket.broadcast.emit("mouseBroadcast", dataReceived);
+  }
+}
