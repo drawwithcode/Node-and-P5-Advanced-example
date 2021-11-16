@@ -21,12 +21,31 @@ let io = serverSocket(server);
 
 io.on("connection", newConnection);
 
-function newConnection(newSocket) {
-  console.log("new connection:", newSocket.id);
+let userColors = {};
 
+function newConnection(newSocket) {
+  // log the connection
+  console.log("new connection:", newSocket.id);
+  // generate a color
+  // function taken from https://css-tricks.com/snippets/javascript/random-hex-color/
+  let newColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+  // add the color to the userColor object
+  userColors[newSocket.id] = newColor;
+
+  // send the color code
+  io.to(newSocket.id).emit("welcome", newColor);
+
+  // tell to all the others that a new user connectd
+  newSocket.broadcast.emit("newUser", { id: newSocket.id, color: newColor });
+
+  // when a message called "mouse" is received from one of the client,
+  // call the incomingMouseMessage function
   newSocket.on("mouse", incomingMouseMessage);
 
   function incomingMouseMessage(dataReceived) {
+    // add to the data the colour
+    dataReceived.color = userColors[dataReceived.id];
+    // send it to all the clients
     newSocket.broadcast.emit("mouseBroadcast", dataReceived);
   }
 }
