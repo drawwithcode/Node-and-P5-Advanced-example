@@ -7,7 +7,7 @@ let express = require("express");
 // create an app
 let app = express();
 
-let port = 3000;
+let port = process.env.PORT || 3000;
 
 let server = app.listen(port);
 
@@ -27,7 +27,6 @@ function newConnection(newSocket) {
   newSocket.on("mouse", incomingMouseMessage);
 
   function incomingMouseMessage(dataReceived) {
-    console.log(dataReceived);
     newSocket.broadcast.emit("mouseBroadcast", dataReceived);
   }
 }
