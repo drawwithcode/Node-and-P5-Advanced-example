@@ -6,6 +6,9 @@ let clientSocket;
 // not arrived yet
 let myColor = "white";
 
+// make an object with all the mouses
+let mouses = {};
+
 // initialise the socket in preload function
 // so it won't be loaded before the setup
 function preload() {
@@ -35,8 +38,10 @@ function welcomeFunction(data) {
 // when a broadcast message come containing data
 // about the pointer of another user, draw a circle in that position
 function mouseBroadcastFunction(dataReceived) {
-  fill(dataReceived.color);
-  circle(dataReceived.x, dataReceived.y, 20);
+  mouses[dataReceived.id] = dataReceived;
+  console.log(mouses);
+  //fill(dataReceived.color);
+  //circle(dataReceived.x, dataReceived.y, 20);
 }
 
 // when a new user connects, print a welcome text
@@ -56,6 +61,11 @@ function setup() {
 // to simulate a fade effect
 function draw() {
   background(0, 0, 0, 5);
+  for (const singleID in mouses) {
+    let otherMouse = mouses[singleID];
+    fill(otherMouse.color);
+    circle(otherMouse.x, otherMouse.y, 20);
+  }
 }
 
 function mouseMoved() {
